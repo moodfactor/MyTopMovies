@@ -3,6 +3,7 @@ package com.example.mytopmovies;
 import androidx.databinding.library.baseAdapters.BuildConfig;
 
 
+import com.example.mytopmovies.di.DaggerAppComponent;
 
 import dagger.android.AndroidInjector;
 import dagger.android.DaggerApplication;

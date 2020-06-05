@@ -1,10 +1,11 @@
-package com.example.mytopmovies.repository;
+package com.example.mytopmovies.data.repository;
 
 import com.example.mytopmovies.data.api_model.Result;
 
 import io.reactivex.Observable;
 
 public interface IRepository {
+
     Observable<Result> getResultsFromMemory();
 
     Observable<Result> getResultsFromNetwork();

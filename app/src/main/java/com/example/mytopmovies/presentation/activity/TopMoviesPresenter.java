@@ -1,6 +1,7 @@
 package com.example.mytopmovies.presentation.activity;
 
 import com.example.mytopmovies.data.BaseModel;
+import com.example.mytopmovies.domain.IInteractor;
 
 import javax.inject.Inject;
 
@@ -13,12 +14,11 @@ public class TopMoviesPresenter implements TopMoviesContract.Presenter {
     @Inject
     TopMoviesContract.View view;
 
-    TopMoviesContract.Model model;
-
+    @Inject
+    IInteractor  interactor;
 
     @Inject
-    public TopMoviesPresenter(TopMoviesContract.Model model) {
-        this.model = model;
+    public TopMoviesPresenter() {
     }
 
     private Disposable subscription = null;
@@ -36,7 +36,7 @@ public class TopMoviesPresenter implements TopMoviesContract.Presenter {
 
     @Override
     public void loadData() {
-        subscription = model.result()
+        subscription = interactor.result()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableObserver<BaseModel>() {

@@ -22,9 +22,9 @@ public interface TopMoviesContract {
         void setView(TopMoviesContract.View view);
     }
 
-    interface Model {
-
-        Observable<BaseModel> result();
-
-    }
+//    interface Model {
+//
+//        Observable<BaseModel> result();
+//
+//    }
 }
