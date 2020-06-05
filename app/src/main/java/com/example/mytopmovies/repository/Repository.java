@@ -9,19 +9,23 @@ import com.example.mytopmovies.data.api_model.TopRated;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 
 public class Repository implements IRepository {
-
-    private MovieApiService movieApiService;
-    private MoreInfoApiService moreInfoApiService;
+    @Inject
+    MovieApiService movieApiService;
+    @Inject
+    MoreInfoApiService moreInfoApiService;
     private List<String> countries;
     private List<Result> results;
     private long timestamp;
 
     private static final long STALE_MS = 20 * 1000; // Data is stale after 20 seconds
+
 
     public Repository(MovieApiService movieApiService, MoreInfoApiService moreInfoApiService) {
         this.moreInfoApiService = moreInfoApiService;
@@ -49,7 +53,7 @@ public class Repository implements IRepository {
     @Override
     public Observable<Result> getResultsFromNetwork() {
 
-        Observable<TopRated> topRatedObservable = movieApiService.getTopRatedMovies("c5fde65b68e0722647c44e9699ef00c6",1).concatWith(movieApiService.getTopRatedMovies("c5fde65b68e0722647c44e9699ef00c6",2)).concatWith(movieApiService.getTopRatedMovies("c5fde65b68e0722647c44e9699ef00c6",3));
+        Observable<TopRated> topRatedObservable = movieApiService.getTopRatedMovies("c5fde65b68e0722647c44e9699ef00c6", 1).concatWith(movieApiService.getTopRatedMovies("c5fde65b68e0722647c44e9699ef00c6", 2)).concatWith(movieApiService.getTopRatedMovies("c5fde65b68e0722647c44e9699ef00c6", 3));
 
         return topRatedObservable.concatMap(new Function<TopRated, Observable<Result>>() {
             @Override

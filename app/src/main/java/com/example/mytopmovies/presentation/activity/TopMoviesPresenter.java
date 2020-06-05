@@ -13,11 +13,12 @@ public class TopMoviesPresenter implements TopMoviesContract.Presenter {
     @Inject
     TopMoviesContract.View view;
 
-    @Inject
     TopMoviesContract.Model model;
 
+
     @Inject
-    public TopMoviesPresenter() {
+    public TopMoviesPresenter(TopMoviesContract.Model model) {
+        this.model = model;
     }
 
     private Disposable subscription = null;
