@@ -12,7 +12,7 @@ import io.reactivex.functions.BiFunction;
 
 public class Interactor implements IInteractor {
 
-    Repository repository;
+    private Repository repository;
 
     @Inject
     public Interactor(Repository repository) {

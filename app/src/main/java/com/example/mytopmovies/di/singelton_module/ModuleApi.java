@@ -3,19 +3,14 @@ package com.example.mytopmovies.di.singelton_module;
 import androidx.databinding.library.baseAdapters.BuildConfig;
 
 import com.example.mytopmovies.ConstantsApp;
-import com.example.mytopmovies.data.ApiService;
 import com.example.mytopmovies.data.MoreInfoApiService;
 import com.example.mytopmovies.data.MovieApiService;
-import com.example.mytopmovies.data.NewApiService;
 import com.example.mytopmovies.di.Named;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
 import java.util.concurrent.TimeUnit;
-
 import javax.inject.Singleton;
-
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.OkHttpClient;
@@ -28,7 +23,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @Module
 public abstract class ModuleApi {
 
-    private static OkHttpClient provideOkHttpClient(){
+    private static OkHttpClient provideOkHttpClient() {
         final OkHttpClient.Builder builder = new OkHttpClient.Builder();
         if (BuildConfig.DEBUG) {
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
@@ -38,6 +33,7 @@ public abstract class ModuleApi {
         builder.connectTimeout(60 * 1000, TimeUnit.MILLISECONDS)
                 .readTimeout(60 * 1000, TimeUnit.MILLISECONDS);
         return builder.build();
+
     }
 
     @Named("api_movie")
@@ -71,7 +67,7 @@ public abstract class ModuleApi {
     @Singleton
     @Provides
     static MoreInfoApiService provideNewApiService(Gson gson, @Named("api_more") OkHttpClient okHttpClient) {
-        return createApi(ConstantsApp.BASE_URL, MoreInfoApiService.class, okHttpClient, GsonConverterFactory.create(gson));
+        return createApi(ConstantsApp.BASE_URL_INFO, MoreInfoApiService.class, okHttpClient, GsonConverterFactory.create(gson));
     }
 
 
