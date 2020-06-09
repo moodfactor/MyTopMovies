@@ -1,12 +1,15 @@
 package com.example.mytopmovies.presentation.activity;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 
+import com.example.mytopmovies.ConstantsApp;
 import com.example.mytopmovies.R;
 import com.example.mytopmovies.data.BaseModel;
 import com.example.mytopmovies.databinding.ActivityTopMoviesBinding;
@@ -19,6 +22,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -35,6 +39,7 @@ public class TopMoviesActivity extends BaseActivity<ActivityTopMoviesBinding> im
 
     private ListAdapter listAdapter;
     private List<BaseModel> resultList = new ArrayList<>();
+    private boolean endOfList = false;
 
     @Override
     protected int getLayoutRes() {
@@ -45,12 +50,30 @@ public class TopMoviesActivity extends BaseActivity<ActivityTopMoviesBinding> im
     protected void createActivity(@Nullable Bundle savedInstanceState) {
         route.onStart(this);
         listAdapter = new ListAdapter(resultList);
+
         getBinding().recyclerView.setAdapter(listAdapter);
         getBinding().recyclerView.addItemDecoration(new DividerItemDecoration(this));
 
         getBinding().recyclerView.setItemAnimator(new DefaultItemAnimator());
         getBinding().recyclerView.setHasFixedSize(true);
         getBinding().recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        getBinding().recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int visibleItemCount = Objects.requireNonNull(recyclerView.getLayoutManager()).getChildCount();
+                int totalItemCount = recyclerView.getLayoutManager().getItemCount();
+                int firstVisibleItemPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+                if (!getBinding().swiperefresh.isRefreshing() && !endOfList) {
+                    if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount - ConstantsApp.PAGINATION_MARGIN
+                            && firstVisibleItemPosition >= 0
+                            && totalItemCount >= ConstantsApp.PAGE_SIZE) {
+                        presenter.onLoadNextPage();
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -65,7 +88,7 @@ public class TopMoviesActivity extends BaseActivity<ActivityTopMoviesBinding> im
     protected void startActivity() {
         getBinding().setEvent(presenter);
         presenter.setView(this);
-        presenter.loadData();
+        presenter.onLoadNextPage();
 
     }
 
@@ -134,5 +157,10 @@ public class TopMoviesActivity extends BaseActivity<ActivityTopMoviesBinding> im
     @Override
     public void showSnackbar(String s) {
         Snackbar.make(getBinding().listActivityRootView, s, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void setRefreshing(boolean active) {
+        getBinding().swiperefresh.setRefreshing(active);
     }
 }

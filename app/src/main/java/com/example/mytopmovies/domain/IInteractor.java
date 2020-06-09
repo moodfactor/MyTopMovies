@@ -6,6 +6,6 @@ import io.reactivex.Observable;
 
 public interface IInteractor {
 
-    Observable<BaseModel> result();
+    Observable<BaseModel> result(int page);
 
 }

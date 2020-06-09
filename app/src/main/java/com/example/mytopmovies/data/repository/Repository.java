@@ -56,21 +56,18 @@ public class  Repository implements IRepository {
     }
 
     @Override
-    public Observable<Result> getResultsFromNetwork() {
+    public Observable<Result> getResultsFromNetwork(int page) {
 
-        Observable<TopRated> topRatedObservable = movieApiService.getTopRatedMovies(1).concatWith(movieApiService.getTopRatedMovies( 2)).concatWith(movieApiService.getTopRatedMovies( 3));
-
+        Observable<TopRated> topRatedObservable = movieApiService.getTopRatedMovies(page);
         return topRatedObservable.concatMap(new Function<TopRated, Observable<Result>>() {
             @Override
             public Observable<Result> apply(TopRated topRated) {
                 return Observable.fromIterable(topRated.results);
             }
         }).doOnNext(new Consumer<Result>() {
-            @SuppressLint("TimberArgCount")
             @Override
             public void accept(Result result) {
                 results.add(result);
-                Timber.d("result",result);
 
             }
         });
@@ -88,8 +85,8 @@ public class  Repository implements IRepository {
     }
 
     @Override
-    public Observable<String> getCountriesFromNetwork() {
-        return getResultsFromNetwork().concatMap(new Function<Result, Observable<OmdbApi>>() {
+    public Observable<String> getCountriesFromNetwork(int page) {
+        return getResultsFromNetwork(page).concatMap(new Function<Result, Observable<OmdbApi>>() {
             @Override
             public Observable<OmdbApi> apply(Result result) {
                 return moreInfoApiService.getCountry(result.title);
@@ -109,13 +106,13 @@ public class  Repository implements IRepository {
     }
 
     @Override
-    public Observable<String> getCountryData() {
-        return getCountriesFromMemory().switchIfEmpty(getCountriesFromNetwork());
+    public Observable<String> getCountryData(int page) {
+        return getCountriesFromMemory().switchIfEmpty(getCountriesFromNetwork(page));
     }
 
     @Override
-    public Observable<Result> getResultData() {
-        return getResultsFromMemory().switchIfEmpty(getResultsFromNetwork());
+    public Observable<Result> getResultData(int page) {
+        return getResultsFromMemory().switchIfEmpty(getResultsFromNetwork(page));
     }
 }
 

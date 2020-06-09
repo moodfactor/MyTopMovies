@@ -8,13 +8,13 @@ public interface IRepository {
 
     Observable<Result> getResultsFromMemory();
 
-    Observable<Result> getResultsFromNetwork();
+    Observable<Result> getResultsFromNetwork(int page);
 
     Observable<String> getCountriesFromMemory();
 
-    Observable<String> getCountriesFromNetwork();
+    Observable<String> getCountriesFromNetwork(int page);
 
-    Observable<String> getCountryData();
+    Observable<String> getCountryData(int page);
 
-    Observable<Result> getResultData();
+    Observable<Result> getResultData(int page);
 }

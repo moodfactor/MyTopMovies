@@ -15,28 +15,29 @@ public class TopMoviesPresenter implements TopMoviesContract.Presenter {
     TopMoviesContract.View view;
 
     @Inject
-    IInteractor  interactor;
+    IInteractor interactor;
 
     @Inject
     public TopMoviesPresenter() {
     }
 
     private Disposable subscription = null;
+    private int currentPage = 1;
 
 
     @Override
     public void startView() {
-
     }
 
     @Override
     public void stopView() {
         if (view != null) view = null;
+
     }
 
     @Override
-    public void loadData() {
-        subscription = interactor.result()
+    public void loadData(int currentPage) {
+        subscription = interactor.result(currentPage)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableObserver<BaseModel>() {
@@ -57,6 +58,7 @@ public class TopMoviesPresenter implements TopMoviesContract.Presenter {
                     public void onNext(BaseModel viewModel) {
                         if (view != null) {
                             view.updateData(viewModel);
+                            view.setRefreshing(false);
                         }
                     }
                 });
@@ -74,5 +76,12 @@ public class TopMoviesPresenter implements TopMoviesContract.Presenter {
     @Override
     public void setView(TopMoviesContract.View view) {
         this.view = view;
+    }
+
+    @Override
+    public void onLoadNextPage() {
+        view.setRefreshing(true);
+        loadData(currentPage);
+        currentPage++;
     }
 }

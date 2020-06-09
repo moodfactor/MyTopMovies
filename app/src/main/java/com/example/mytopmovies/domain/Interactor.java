@@ -20,10 +20,10 @@ public class Interactor implements IInteractor {
     }
 
     @Override
-    public Observable<BaseModel> result() {
+    public Observable<BaseModel> result(int page) {
         return Observable.zip(
-                repository.getResultData(),
-                repository.getCountryData(),
+                repository.getResultData(page),
+                repository.getCountryData(page),
                 new BiFunction<Result, String, BaseModel>() {
                     @Override
                     public BaseModel apply(Result result, String s) {
