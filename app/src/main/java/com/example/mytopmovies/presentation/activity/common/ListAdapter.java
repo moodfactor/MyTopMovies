@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mytopmovies.R;
@@ -27,6 +28,14 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListItemViewHo
         View itemView =
                 LayoutInflater.from(parent.getContext()).inflate(R.layout.movie_list_row, parent, false);
         return new ListItemViewHolder(itemView);
+    }
+
+    public void updateData(List<BaseModel> newList){
+        MyDiffUtill myDiffUtill = new MyDiffUtill(list,newList);
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(myDiffUtill);
+        list.clear();
+        list.addAll(newList);
+        diffResult.dispatchUpdatesTo(this);
     }
 
     @Override

@@ -3,9 +3,13 @@ package com.example.mytopmovies.presentation.activity;
 import com.example.mytopmovies.data.BaseModel;
 import com.example.mytopmovies.domain.IInteractor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -21,8 +25,8 @@ public class TopMoviesPresenter implements TopMoviesContract.Presenter {
     public TopMoviesPresenter() {
     }
 
-    private Disposable subscription = null;
-    private int currentPage = 1;
+    private CompositeDisposable subscription = new CompositeDisposable();
+    List<BaseModel> modelList = new ArrayList<>();
 
 
     @Override
@@ -36,41 +40,27 @@ public class TopMoviesPresenter implements TopMoviesContract.Presenter {
     }
 
     @Override
-    public void loadData(int currentPage) {
-        subscription = interactor.result(currentPage)
+    public void loadData() {
+        subscription.add(interactor.result()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableObserver<BaseModel>() {
-                    @Override
-                    public void onComplete() {
+                .subscribe(results -> {
+                    if (view != null) {
+                        modelList.add(results);
+                        view.updateData(modelList);
                     }
-
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                        if (view != null) {
-                            view.showSnackbar("Error getting movies");
-                        }
+                }, error -> {
+                    error.printStackTrace();
+                    if (view != null) {
+                        view.showSnackbar("Error getting movies");
                     }
+                }));
 
-                    @Override
-                    public void onNext(BaseModel viewModel) {
-                        if (view != null) {
-                            view.updateData(viewModel);
-                            view.setRefreshing(false);
-                        }
-                    }
-                });
     }
 
     @Override
     public void rxUnsubscribe() {
-        if (subscription != null) {
-            if (!subscription.isDisposed()) {
-                subscription.dispose();
-            }
-        }
+       subscription.clear();
     }
 
     @Override
@@ -80,8 +70,19 @@ public class TopMoviesPresenter implements TopMoviesContract.Presenter {
 
     @Override
     public void onLoadNextPage() {
-        view.setRefreshing(true);
-        loadData(currentPage);
-        currentPage++;
+        subscription.add(interactor.loadNextPage()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(results -> {
+                    if (view != null) {
+                        modelList.add(results);
+                        view.updateData(modelList);
+                    }
+                }, error -> {
+                    error.printStackTrace();
+                    if (view != null) {
+                        view.showSnackbar("Error getting movies");
+                    }
+                }));
     }
 }

@@ -107,12 +107,12 @@ public class  Repository implements IRepository {
 
     @Override
     public Observable<String> getCountryData(int page) {
-        return getCountriesFromMemory().switchIfEmpty(getCountriesFromNetwork(page));
+        return getCountriesFromNetwork(page);
     }
 
     @Override
     public Observable<Result> getResultData(int page) {
-        return getResultsFromMemory().switchIfEmpty(getResultsFromNetwork(page));
+        return getResultsFromNetwork(page);
     }
 }
 

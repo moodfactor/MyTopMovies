@@ -29,6 +29,7 @@ import javax.inject.Inject;
 import dagger.android.support.DaggerAppCompatDialogFragment;
 import dagger.android.support.DaggerFragment;
 
+
 public class TopMoviesActivity extends BaseActivity<ActivityTopMoviesBinding> implements TopMoviesContract.View {
 
     @Inject
@@ -39,7 +40,6 @@ public class TopMoviesActivity extends BaseActivity<ActivityTopMoviesBinding> im
 
     private ListAdapter listAdapter;
     private List<BaseModel> resultList = new ArrayList<>();
-    private boolean endOfList = false;
 
     @Override
     protected int getLayoutRes() {
@@ -51,26 +51,35 @@ public class TopMoviesActivity extends BaseActivity<ActivityTopMoviesBinding> im
         route.onStart(this);
         listAdapter = new ListAdapter(resultList);
 
+
         getBinding().recyclerView.setAdapter(listAdapter);
         getBinding().recyclerView.addItemDecoration(new DividerItemDecoration(this));
 
         getBinding().recyclerView.setItemAnimator(new DefaultItemAnimator());
         getBinding().recyclerView.setHasFixedSize(true);
         getBinding().recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        presenter.loadData();
 
         getBinding().recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
+//                int visibleItemCount = Objects.requireNonNull(recyclerView.getLayoutManager()).getChildCount();
+//                int totalItemCount = recyclerView.getLayoutManager().getItemCount();
+//                int firstVisibleItemPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+//                if (!getBinding().swiperefresh.isRefreshing() && !endOfList) {
+//                    if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount - ConstantsApp.PAGINATION_MARGIN
+//                            && firstVisibleItemPosition >= 0
+//                            && totalItemCount >= ConstantsApp.PAGE_SIZE) {
+//                        presenter.onLoadNextPage();
+//                    }
+//                }
+//            }
+
             @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                int visibleItemCount = Objects.requireNonNull(recyclerView.getLayoutManager()).getChildCount();
-                int totalItemCount = recyclerView.getLayoutManager().getItemCount();
-                int firstVisibleItemPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
-                if (!getBinding().swiperefresh.isRefreshing() && !endOfList) {
-                    if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount - ConstantsApp.PAGINATION_MARGIN
-                            && firstVisibleItemPosition >= 0
-                            && totalItemCount >= ConstantsApp.PAGE_SIZE) {
-                        presenter.onLoadNextPage();
-                    }
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                if (!getBinding().recyclerView.canScrollVertically(1)){
+                    presenter.onLoadNextPage();
                 }
             }
         });
@@ -81,14 +90,12 @@ public class TopMoviesActivity extends BaseActivity<ActivityTopMoviesBinding> im
         super.onStop();
         presenter.rxUnsubscribe();
         resultList.clear();
-        listAdapter.notifyDataSetChanged();
     }
 
     @Override
     protected void startActivity() {
         getBinding().setEvent(presenter);
         presenter.setView(this);
-        presenter.onLoadNextPage();
 
     }
 
@@ -105,6 +112,7 @@ public class TopMoviesActivity extends BaseActivity<ActivityTopMoviesBinding> im
     @Override
     protected void destroyActivity() {
         if (presenter != null) presenter = null;
+
     }
 
     @Override
@@ -149,9 +157,9 @@ public class TopMoviesActivity extends BaseActivity<ActivityTopMoviesBinding> im
     }
 
     @Override
-    public void updateData(BaseModel baseModel) {
-        resultList.add(baseModel);
-        listAdapter.notifyItemInserted(resultList.size() - 1);
+    public void updateData(List<BaseModel> resultList) {
+        listAdapter.updateData(resultList);
+
     }
 
     @Override
@@ -159,8 +167,5 @@ public class TopMoviesActivity extends BaseActivity<ActivityTopMoviesBinding> im
         Snackbar.make(getBinding().listActivityRootView, s, Snackbar.LENGTH_SHORT).show();
     }
 
-    @Override
-    public void setRefreshing(boolean active) {
-        getBinding().swiperefresh.setRefreshing(active);
-    }
+
 }
