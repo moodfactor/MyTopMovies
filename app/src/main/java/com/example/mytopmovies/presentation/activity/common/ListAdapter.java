@@ -59,8 +59,8 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListItemViewHo
 
         public ListItemViewHolder(View itemView) {
             super(itemView);
-            itemName = (TextView) itemView.findViewById(R.id.textView_fragmentlist_task_name);
-            countryName = (TextView) itemView.findViewById(R.id.textView_fragmentlist_country_name);
+            itemName = (TextView) itemView.findViewById(R.id.textView_task_name);
+            countryName = (TextView) itemView.findViewById(R.id.textView_country_name);
         }
     }
 }

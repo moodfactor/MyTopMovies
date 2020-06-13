@@ -175,12 +175,12 @@ public abstract class BaseActivity<Binding extends ViewDataBinding> extends Dagg
 
     @Override
     protected void onStop() {
-        stopActivity();
-        if (getPresenter() != null){
-            getPresenter().stopView();
-        }
-        destroyActivity();
-        if (binding != null)binding = null;
+//        stopActivity();
+//        if (getPresenter() != null){
+//            getPresenter().stopView();
+//        }
+//        destroyActivity();
+//        if (binding != null)binding = null;
         super.onStop();
     }
 

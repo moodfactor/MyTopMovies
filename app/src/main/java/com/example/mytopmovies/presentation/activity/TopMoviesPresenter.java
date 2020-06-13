@@ -10,8 +10,6 @@ import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 
 public class TopMoviesPresenter implements TopMoviesContract.Presenter {
@@ -36,7 +34,8 @@ public class TopMoviesPresenter implements TopMoviesContract.Presenter {
     @Override
     public void stopView() {
         if (view != null) view = null;
-
+        if (interactor != null) interactor = null;
+        if (subscription != null) subscription.clear();
     }
 
     @Override
@@ -48,25 +47,17 @@ public class TopMoviesPresenter implements TopMoviesContract.Presenter {
                     if (view != null) {
                         modelList.add(results);
                         view.updateData(modelList);
+                        view.setRefreshing(false);
                     }
                 }, error -> {
                     error.printStackTrace();
                     if (view != null) {
-                        view.showSnackbar("Error getting movies");
+                        view.setRefreshing(true);
                     }
                 }));
 
     }
 
-    @Override
-    public void rxUnsubscribe() {
-       subscription.clear();
-    }
-
-    @Override
-    public void setView(TopMoviesContract.View view) {
-        this.view = view;
-    }
 
     @Override
     public void onLoadNextPage() {
@@ -77,11 +68,12 @@ public class TopMoviesPresenter implements TopMoviesContract.Presenter {
                     if (view != null) {
                         modelList.add(results);
                         view.updateData(modelList);
+                        view.setRefreshing(false);
                     }
                 }, error -> {
                     error.printStackTrace();
                     if (view != null) {
-                        view.showSnackbar("Error getting movies");
+                        view.setRefreshing(true);
                     }
                 }));
     }

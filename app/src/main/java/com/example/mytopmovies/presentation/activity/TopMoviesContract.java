@@ -15,15 +15,13 @@ public interface TopMoviesContract {
 
         void showSnackbar(String s);
 
+        void setRefreshing(boolean active);
+
     }
 
     interface Presenter extends BasePresenter {
 
         void loadData();
-
-        void rxUnsubscribe();
-
-        void setView(TopMoviesContract.View view);
 
         void onLoadNextPage();
     }

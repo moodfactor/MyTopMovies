@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 
 import com.example.mytopmovies.ConstantsApp;
 import com.example.mytopmovies.R;
@@ -41,16 +42,19 @@ public class TopMoviesActivity extends BaseActivity<ActivityTopMoviesBinding> im
     private ListAdapter listAdapter;
     private List<BaseModel> resultList = new ArrayList<>();
 
+
     @Override
     protected int getLayoutRes() {
         return R.layout.activity_top_movies;
     }
 
+
+
     @Override
     protected void createActivity(@Nullable Bundle savedInstanceState) {
         route.onStart(this);
+        getBinding().setEvent(presenter);
         listAdapter = new ListAdapter(resultList);
-
 
         getBinding().recyclerView.setAdapter(listAdapter);
         getBinding().recyclerView.addItemDecoration(new DividerItemDecoration(this));
@@ -87,16 +91,10 @@ public class TopMoviesActivity extends BaseActivity<ActivityTopMoviesBinding> im
 
     @Override
     protected void stopActivity() {
-        super.onStop();
-        presenter.rxUnsubscribe();
-        resultList.clear();
     }
 
     @Override
     protected void startActivity() {
-        getBinding().setEvent(presenter);
-        presenter.setView(this);
-
     }
 
     @Override
@@ -111,8 +109,8 @@ public class TopMoviesActivity extends BaseActivity<ActivityTopMoviesBinding> im
 
     @Override
     protected void destroyActivity() {
-        if (presenter != null) presenter = null;
-
+        if (listAdapter != null) listAdapter = null;
+        if (resultList != null) resultList = null;
     }
 
     @Override
@@ -165,6 +163,11 @@ public class TopMoviesActivity extends BaseActivity<ActivityTopMoviesBinding> im
     @Override
     public void showSnackbar(String s) {
         Snackbar.make(getBinding().listActivityRootView, s, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void setRefreshing(boolean active) {
+        getBinding().swiperefresh.setRefreshing(active);
     }
 
 

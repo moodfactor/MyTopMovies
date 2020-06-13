@@ -11,7 +11,7 @@
     android:background="?android:selectableItemBackground">
 
     <TextView
-        android:id="@+id/textView_fragmentlist_task_name"
+        android:id="@+id/textView_task_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ellipsize="end"
@@ -23,7 +23,7 @@
         android:textSize="25sp" />
 
     <TextView
-        android:id="@+id/textView_fragmentlist_country_name"
+        android:id="@+id/textView_country_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:text="USA"
